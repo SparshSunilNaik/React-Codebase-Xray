@@ -1,4 +1,4 @@
-# React Codebase X-Ray 🔍
+# React Codebase X-Ray
 
 > A fully local, open-source developer tool for analyzing React codebases.
 
@@ -10,13 +10,13 @@
 
 Understanding a React codebase—especially a large one—can be overwhelming. React Codebase X-Ray provides instant insights into:
 
-- 📊 **Project Structure** - File statistics, largest files, tech stack detection
-- 🔗 **Dependency Graph** - Visualize module dependencies with interactive graphs
-- 🔄 **Circular Dependencies** - Detect and highlight problematic import cycles
-- 🛣️ **Route Map** - Detect Next.js (App/Pages Router) and React Router routes
-- 📦 **Unused Dependencies** - Find packages in package.json that aren't used
-- ⚠️ **Lint Issues** - React-specific issues with explanations and fixes
-- 🔧 **Diagnostics** - Opt-in build/test execution with error analysis
+- **Project Structure** - File statistics, largest files, tech stack detection
+- **Dependency Graph** - Visualize module dependencies with interactive graphs
+- **Circular Dependencies** - Detect and highlight problematic import cycles
+- **Route Map** - Detect Next.js (App/Pages Router) and React Router routes
+- **Unused Dependencies** - Find packages in package.json that aren't used
+- **Lint Issues** - React-specific issues with explanations and fixes
+- **Diagnostics** - Opt-in build/test execution with error analysis
 
 **All analysis runs 100% locally on your machine.** No data is uploaded anywhere.
 
@@ -75,7 +75,7 @@ npx react-codebase-xray analyze ./my-project --diagnostics
 
 ## Features
 
-### 📊 Project Overview
+### Project Overview
 
 Get instant insights into your codebase:
 - Total files, lines of code, directories
@@ -84,7 +84,7 @@ Get instant insights into your codebase:
 - File type distribution
 - Largest files in the codebase
 
-### 🔗 Dependency Graph
+### Dependency Graph
 
 Interactive visualization powered by React Flow:
 - Zoomable and pannable graph
@@ -93,7 +93,7 @@ Interactive visualization powered by React Flow:
 - Click nodes for detailed information
 - Filter to show only circular dependencies
 
-### 🛣️ Route Detection
+### Route Detection
 
 Automatically detects routes for:
 - **Next.js App Router** - Scans `app/` for `page.tsx` and `route.tsx`
@@ -105,14 +105,14 @@ Features:
 - API route identification
 - HTTP method detection for API routes
 
-### 📦 Dependency Analysis
+### Dependency Analysis
 
 Powered by `depcheck`:
 - Find unused dependencies
 - Find missing dependencies
 - Quick uninstall/install commands
 
-### ⚠️ Lint Analysis
+### Lint Analysis
 
 Programmatic ESLint analysis with React-focused rules:
 - React Hooks violations
@@ -121,9 +121,9 @@ Programmatic ESLint analysis with React-focused rules:
 - TypeScript issues
 - Human-readable explanations for each issue
 
-### 🔧 Diagnostics Mode
+### Diagnostics Mode
 
-**⚠️ Opt-in only with explicit confirmation**
+**Opt-in only with explicit confirmation**
 
 Runs sandboxed npm commands:
 - `npm install --legacy-peer-deps`
@@ -185,14 +185,14 @@ react-codebase-xray/
 
 ## Security Notes
 
-### 🔒 Local-First Design
+### Local-First Design
 
 - **No cloud services** - Everything runs on your machine
 - **No external API calls** - No data is uploaded anywhere
 - **No accounts required** - No registration or login
 - **No telemetry** - We don't track anything
 
-### ⚠️ Diagnostics Mode
+### Diagnostics Mode
 
 Diagnostics mode is **disabled by default** and requires:
 1. Explicit checkbox confirmation in the UI
@@ -206,7 +206,7 @@ Diagnostics mode is **disabled by default** and requires:
 
 All commands have a 5-minute timeout to prevent runaway processes.
 
-### 🛡️ Path Validation
+### Path Validation
 
 - Path traversal attacks are blocked
 - Only absolute paths within the project are allowed
@@ -284,13 +284,13 @@ npm test
 
 ## Roadmap
 
-- [ ] **Monorepo support** - Better handling of Nx, Turborepo, Lerna workspaces
-- [ ] **Bundle analysis** - Integration with webpack-bundle-analyzer
-- [ ] **Performance profiling** - React DevTools-like insights
-- [ ] **Git history** - Code churn, hotspots, contributor analysis
-- [ ] **VS Code extension** - Analyze directly from your editor
-- [ ] **Docker support** - Optional containerized deployment
-- [ ] **Custom rule plugins** - Extend analysis with your own rules
+- **Monorepo support** - Better handling of Nx, Turborepo, Lerna workspaces
+- **Bundle analysis** - Integration with webpack-bundle-analyzer
+- **Performance profiling** - React DevTools-like insights
+- **Git history** - Code churn, hotspots, contributor analysis
+- **VS Code extension** - Analyze directly from your editor
+- **Docker support** - Optional containerized deployment
+- **Custom rule plugins** - Extend analysis with your own rules
 
 ---
 
@@ -300,29 +300,29 @@ npm test
 
 | Test | Status |
 |------|--------|
-| **Analyzer Unit Tests** | ✅ Pass |
-| Circular dependency detection (circularA ↔ circularB) | ✅ Pass |
-| Orphaned module detection (orphanedHelper.ts) | ✅ Pass |
-| Unused package detection (unused-package) | ✅ Pass |
-| Lint issues with file/line numbers | ✅ Pass |
-| **Route Detection** | ✅ Pass |
-| Next.js App Router detection | ✅ Pass |
-| Dynamic route detection | ✅ Pass |
-| API route detection | ✅ Pass |
-| **CLI** | ✅ Pass |
-| JSON report generation | ✅ Pass |
-| Markdown report generation | ✅ Pass |
-| **Web UI** | ✅ Pass |
-| Dependency graph renders | ✅ Pass |
-| Circular deps highlighted (yellow/orange) | ✅ Pass |
-| Route map renders | ✅ Pass |
-| Issues panel with severity ordering | ✅ Pass |
-| **Diagnostics Safety** | ✅ Pass |
-| Requires explicit opt-in (confirmed: true) | ✅ Pass |
-| Only whitelisted commands execute | ✅ Pass |
-| **Cross-Platform** | ✅ Pass |
-| Windows paths (primary target) | ✅ Pass |
-| path.join/path.resolve used throughout | ✅ Pass |
+| **Analyzer Unit Tests** | Pass |
+| Circular dependency detection (circularA ↔ circularB) | Pass |
+| Orphaned module detection (orphanedHelper.ts) | Pass |
+| Unused package detection (unused-package) | Pass |
+| Lint issues with file/line numbers | Pass |
+| **Route Detection** | Pass |
+| Next.js App Router detection | Pass |
+| Dynamic route detection | Pass |
+| API route detection | Pass |
+| **CLI** | Pass |
+| JSON report generation | Pass |
+| Markdown report generation | Pass |
+| **Web UI** | Pass |
+| Dependency graph renders | Pass |
+| Circular deps highlighted (yellow/orange) | Pass |
+| Route map renders | Pass |
+| Issues panel with severity ordering | Pass |
+| **Diagnostics Safety** | Pass |
+| Requires explicit opt-in (confirmed: true) | Pass |
+| Only whitelisted commands execute | Pass |
+| **Cross-Platform** | Pass |
+| Windows paths (primary target) | Pass |
+| path.join/path.resolve used throughout | Pass |
 
 ---
 
@@ -346,7 +346,7 @@ This tool is built on top of excellent open-source projects:
 ---
 
 <p align="center">
-  <b>Built with ❤️ for the React community</b>
+  <b>Built for the React community</b>
   <br>
   <i>100% Local • Open Source • Privacy First</i>
 </p>
