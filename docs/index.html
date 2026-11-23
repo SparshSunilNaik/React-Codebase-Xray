@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>React Codebase X-Ray</title>
+  <meta name="description" content="A local, open-source analyzer for React codebases: import graph, circular dependencies, routes, unused packages, React lint and opt-in build diagnostics. Nothing leaves your machine.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" id="favicon">
+  <link rel="alternate icon" href="favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("xray-theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Ubuntu+Sans+Mono:wght@400;500;600&family=Ubuntu+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="#top" aria-label="React Codebase X-Ray, back to top"><img src="favicon.svg" alt=""><span>Codebase X-Ray</span></a>
+      <nav class="nav" aria-label="Sections">
+        <a href="#findings">Findings</a>
+        <a href="#scan">The scan</a>
+        <a href="#cli">CLI</a>
+        <a href="#safety">Safety</a>
+        <a href="#start">Start</a>
+      </nav>
+      <button class="icon-btn" id="theme-btn" type="button" aria-label="Toggle light mode" title="Toggle light mode">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a9 9 0 1 0 11 11Z"/></svg>
+      </button>
+      <a class="icon-btn" href="https://github.com/SparshSunilNaik/React-Codebase-Xray" aria-label="Source on GitHub" title="Source on GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero wrap">
+      <div class="hero-copy">
+        <p class="kicker"><span class="dot"></span>Local React codebase analyzer</p>
+        <h1>See through your <em>React app.</em></h1>
+        <p class="lede">Point it at a project folder or a ZIP. X-Ray maps every import, finds the loops and the files nothing uses, lists your routes and unused packages, and explains its lint findings in plain words. It all runs on your machine.</p>
+        <div class="badges"><span>100% local</span><span>No telemetry</span><span>No account</span><span>MIT licensed</span></div>
+        <div class="actions"><a class="btn primary" href="#start">Run it locally</a><a class="btn" href="#findings">What it finds</a></div>
+      </div>
+
+      <figure class="film hero-film" id="hero-film">
+        <div class="film-head"><span>sample-react-app/src</span><span id="scan-state">scanning</span></div>
+        <div class="film-body">
+          <svg id="skeleton" viewBox="0 0 520 540" role="img" aria-label="Import graph of the sample React app. main.tsx imports App, which imports Header, Home, About and Users; Home imports useCounter. circularA and circularB import each other, and orphanedHelper is imported by nothing."></svg>
+          <div class="scanline" aria-hidden="true"></div>
+        </div>
+        <figcaption class="film-foot">
+          <span><i class="k ok"></i>10 modules</span>
+          <span><i class="k warn"></i>1 cycle</span>
+          <span><i class="k warn"></i>1 orphan</span>
+          <span class="hint">Hover a module for its imports</span>
+        </figcaption>
+        <div class="node-tip" id="node-tip" hidden></div>
+      </figure>
+    </section>
+
+    <section class="block wrap" id="findings">
+      <div class="sec-head">
+        <span class="num">01</span>
+        <div>
+          <h2>Six things on one film</h2>
+          <p>Each panel below is a real result from the two sample apps that ship in the repository. They are planted with a loop, an orphan, an unused package and a few lint smells, so you can see every check fire.</p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <article class="film card reveal">
+          <div class="film-head"><span>Project overview</span><span>projectOverview.ts</span></div>
+          <div class="film-body pad">
+            <div class="stats">
+              <div><b data-count="10">10</b><span>modules</span></div>
+              <div><b data-count="139">139</b><span>lines of TS and TSX</span></div>
+              <div><b data-count="4">4</b><span>folders</span></div>
+            </div>
+            <div class="stack"><span class="on">Vite</span><span class="on">TypeScript</span><span class="on">React Router</span><span>Next.js</span><span>CRA</span><span>Remix</span><span>Gatsby</span></div>
+            <ol class="largest"><li><span>pages/Users.tsx</span><i style="--w:100%"></i><em>35</em></li><li><span>App.tsx</span><i style="--w:66%"></i><em>23</em></li><li><span>pages/Home.tsx</span><i style="--w:40%"></i><em>14</em></li></ol>
+          </div>
+          <p class="cap"><b>Framework and stack.</b> Reads package.json to tell Next.js, Vite, Create React App, Remix and Gatsby apart, then badges the rest of the stack and lists the largest files.</p>
+        </article>
+
+        <article class="film card reveal">
+          <div class="film-head"><span>Dependency graph</span><span>madge</span></div>
+          <div class="film-body pad center">
+            <svg class="mini" viewBox="0 0 300 150" aria-label="circularA.ts and circularB.ts import each other">
+              <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="var(--warn)"/></marker></defs>
+              <path class="flow" d="M108 58 C140 20 160 20 192 58" fill="none" stroke="var(--warn)" stroke-width="2" marker-end="url(#ah)"/>
+              <path class="flow" d="M192 92 C160 130 140 130 108 92" fill="none" stroke="var(--warn)" stroke-width="2" marker-end="url(#ah)"/>
+              <g class="bone warn"><rect x="10" y="56" width="98" height="38" rx="9"/><text x="59" y="80">circularA</text></g>
+              <g class="bone warn"><rect x="192" y="56" width="98" height="38" rx="9"/><text x="241" y="80">circularB</text></g>
+            </svg>
+            <code class="chain">circularA.ts imports circularB.ts, which imports circularA.ts</code>
+          </div>
+          <p class="cap"><b>Loops and orphans.</b> madge builds the import graph. Modules are typed as component, hook, util, page, layout or API; cycles are marked, and files nothing imports are called out.</p>
+        </article>
+
+        <article class="film card reveal">
+          <div class="film-head"><span>Route map</span><span>routeDetector.ts</span></div>
+          <div class="film-body pad">
+            <div class="routes">
+              <div class="rcol"><h4>React Router</h4>
+                <code>/</code><code>/about</code><code>/users</code><code class="dyn">/users/<b>:id</b></code>
+              </div>
+              <div class="rcol"><h4>Next.js App Router</h4>
+                <code>/</code><code>/about</code><code>/users</code><code class="dyn">/users/<b>[id]</b></code><code class="api">/api/users <em>GET</em> <em>POST</em></code>
+              </div>
+            </div>
+          </div>
+          <p class="cap"><b>Every page and endpoint.</b> Scans <code>app/</code> and <code>pages/</code> for Next.js, and parses <code>&lt;Route&gt;</code> and <code>createBrowserRouter</code> for React Router. Dynamic segments and API methods are labelled.</p>
+        </article>
+
+        <article class="film card reveal">
+          <div class="film-head"><span>Packages</span><span>depcheck</span></div>
+          <div class="film-body pad">
+            <ul class="pkgs">
+              <li><span>react</span><em>used</em></li>
+              <li><span>react-dom</span><em>used</em></li>
+              <li><span>react-router-dom</span><em>used</em></li>
+              <li><span>axios</span><em>used in Users.tsx</em></li>
+              <li class="bad"><span>unused-package</span><em>never imported</em></li>
+            </ul>
+            <div class="cmd small"><pre>npm uninstall unused-package</pre><button class="copy" type="button">Copy</button></div>
+          </div>
+          <p class="cap"><b>Dead weight and gaps.</b> Lists packages in package.json that no file imports, plus imports with no matching package, each with the command to fix it.</p>
+        </article>
+
+        <article class="film card reveal">
+          <div class="film-head"><span>Lint</span><span>ESLint, React rules</span></div>
+          <div class="film-body pad">
+            <div class="lint">
+              <div class="li"><span class="sev">warning</span><code>utils/orphanedHelper.ts:6</code><b>@typescript-eslint/no-explicit-any</b><p>Using "any" type defeats the purpose of TypeScript. Consider using a more specific type or "unknown".</p></div>
+              <div class="li"><span class="sev">warning</span><code>utils/orphanedHelper.ts:8</code><b>no-console</b><p>Console statements should be removed from production code. Use a proper logging library instead.</p></div>
+            </div>
+          </div>
+          <p class="cap"><b>Explained, not just flagged.</b> Runs ESLint from code with hooks, performance, accessibility and TypeScript rules, and pairs each rule with an explanation like these.</p>
+        </article>
+
+        <article class="film card reveal">
+          <div class="film-head"><span>Diagnostics</span><span>opt-in</span></div>
+          <div class="film-body pad">
+            <ol class="steps">
+              <li><i class="ok">✓</i><code>npm install --legacy-peer-deps</code></li>
+              <li><i class="bad">✗</i><code>npm run build</code></li>
+              <li><i class="skip">–</i><code>npm test -- --passWithNoTests</code></li>
+            </ol>
+            <div class="diag">
+              <code>Cannot find module './utils/date'</code>
+              <p><b>Probable cause:</b> the module is imported but not installed or doesn't exist.</p>
+              <p><b>Fix:</b> check if the file "./utils/date" exists and the path is correct.</p>
+            </div>
+          </div>
+          <p class="cap"><b>Why the build broke.</b> When you ask for it, X-Ray runs install, build and test, then matches the output against known errors to suggest a cause and a fix. The failing build here is an example.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="block wrap" id="scan">
+      <div class="sec-head">
+        <span class="num">02</span>
+        <div>
+          <h2>How one scan runs</h2>
+          <p>The same <code>analyze()</code> call sits behind the dashboard and the CLI. It works through the project in this order, then hands everything to the report builder.</p>
+        </div>
+      </div>
+      <ol class="pipeline">
+        <li class="reveal"><span class="pi">in</span><div><h3>Folder or ZIP</h3><p>A ZIP up to 500 MB is unpacked into a temporary folder, and the project root is found by its package.json. Paths with traversal are refused.</p></div></li>
+        <li class="reveal"><span class="pi">1</span><div><h3>Overview</h3><p>Framework, stack, file counts, lines of code and the largest files.</p></div></li>
+        <li class="reveal"><span class="pi">2</span><div><h3>Import graph</h3><p>madge, with your tsconfig, over .ts, .tsx, .js, .jsx, .mjs and .cjs files. node_modules is left out.</p></div></li>
+        <li class="reveal"><span class="pi">3</span><div><h3>Routes</h3><p>Next.js App Router and Pages Router, or React Router.</p></div></li>
+        <li class="reveal"><span class="pi">4</span><div><h3>Lint</h3><p>Your ESLint config when there is one, a React-focused fallback when there is not.</p></div></li>
+        <li class="reveal"><span class="pi">5</span><div><h3>Packages</h3><p>depcheck for unused and missing dependencies.</p></div></li>
+        <li class="reveal opt"><span class="pi">6</span><div><h3>Diagnostics, only if asked</h3><p>Install, build, test. Skipped unless you opt in.</p></div></li>
+        <li class="reveal out"><span class="pi">out</span><div><h3>Report</h3><p>The dashboard at localhost:5173, a JSON report, or a Markdown report. Temporary ZIP folders are deleted afterwards.</p></div></li>
+      </ol>
+    </section>
+
+    <section class="block wrap" id="cli">
+      <div class="sec-head">
+        <span class="num">03</span>
+        <div>
+          <h2>Or from the terminal</h2>
+          <p>The CLI prints a summary and the issues, and exits with code 1 when there are lint errors, so it can gate a CI job.</p>
+        </div>
+      </div>
+      <div class="cli">
+        <div class="term-card">
+          <div class="term-bar"><i></i><i></i><i></i><span>npx react-codebase-xray analyze ./samples/sample-react-app</span></div>
+<pre class="term" id="term" aria-label="Example CLI output"><span class="c">═══════════════════════════════════════════</span>
+   <b>🔍 React Codebase X-Ray</b>
+   <span class="g">Local React Codebase Analyzer</span>
+<span class="c">═══════════════════════════════════════════</span>
+
+<span class="g">Analyzing: D:\code\samples\sample-react-app</span>
+
+<span class="ok">✔ Analysis complete in 4.2s</span>
+
+<b>📊 Summary</b>
+<span class="g">──────────────────────────────────────────</span>
+  Project:     <span class="c">sample-react-app</span>
+  Framework:   <span class="y">vite</span>
+  Files:       10
+  Lines:       139
+  Modules:     10
+  Routes:      4
+
+<b>🔍 Issues</b>
+<span class="g">──────────────────────────────────────────</span>
+  <span class="y">⚠</span>  Circular Dependencies: <span class="y">1</span>
+  <span class="y">⚠</span>  Lint Warnings: <span class="y">2</span>
+  <span class="b">ℹ</span>  Unused Dependencies: <span class="b">1</span>
+
+<b>🔄 Circular Dependencies</b>
+<span class="g">──────────────────────────────────────────</span>
+  <span class="y">→</span> src/utils/circularA.ts → src/utils/circularB.ts
+
+<span class="g">Tip: Use --output &lt;file&gt; to save the report</span></pre>
+          <p class="term-note">Shape and wording come from the CLI source; timings and counts on a real run will differ.</p>
+        </div>
+        <div class="flags">
+          <h3>Useful flags</h3>
+          <dl>
+            <dt><code>-o, --output &lt;file&gt;</code></dt><dd>Save the report.</dd>
+            <dt><code>-f, --format markdown</code></dt><dd>Markdown instead of JSON.</dd>
+            <dt><code>--no-lint</code>, <code>--no-deps</code></dt><dd>Skip the slower checks.</dd>
+            <dt><code>--diagnostics</code></dt><dd>Also run install, build and test.</dd>
+            <dt><code>--timeout &lt;ms&gt;</code></dt><dd>Per-command limit for diagnostics, 300000 by default.</dd>
+          </dl>
+          <div class="cmd"><pre>npx react-codebase-xray analyze ./my-app \
+  --output report.md --format markdown</pre><button class="copy" type="button">Copy</button></div>
+          <div class="cmd"><pre>npx react-codebase-xray report result.json -o report.md</pre><button class="copy" type="button">Copy</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block wrap" id="safety">
+      <div class="sec-head">
+        <span class="num">04</span>
+        <div>
+          <h2>Reading code is safe. Running it is opt-in.</h2>
+          <p>Analysis only reads files. Diagnostics actually executes your project's scripts, so it is off until you turn it on in all the places that matter.</p>
+        </div>
+      </div>
+      <div class="safety">
+        <div class="lock reveal">
+          <h3>Three switches</h3>
+          <ol class="switches">
+            <li><span class="sw"></span>A checkbox you tick in the web UI</li>
+            <li><span class="sw"></span><code>confirmed: true</code> in the API request</li>
+            <li><span class="sw"></span><code>--diagnostics</code> on the CLI</li>
+          </ol>
+        </div>
+        <div class="lock reveal">
+          <h3>Three commands, nothing else</h3>
+          <ul class="allow">
+            <li><code>npm install --legacy-peer-deps</code></li>
+            <li><code>npm run build</code></li>
+            <li><code>npm test -- --passWithNoTests</code></li>
+          </ul>
+          <p class="note">Each is killed after 5 minutes by default.</p>
+        </div>
+        <div class="lock reveal">
+          <h3>Nothing leaves the machine</h3>
+          <ul class="plain">
+            <li>No cloud services or external API calls</li>
+            <li>No accounts and no telemetry</li>
+            <li>ZIPs unpack into an isolated temporary folder</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="block wrap" id="start">
+      <div class="sec-head">
+        <span class="num">05</span>
+        <div>
+          <h2>Run it locally</h2>
+          <p>Node.js 18 or newer and npm 9 or newer. One command starts the dashboard and its API together.</p>
+        </div>
+      </div>
+      <div class="start">
+        <ol class="install">
+          <li><span>Clone</span><div class="cmd"><pre>git clone https://github.com/SparshSunilNaik/React-Codebase-Xray.git
+cd React-Codebase-Xray</pre><button class="copy" type="button">Copy</button></div></li>
+          <li><span>Install</span><div class="cmd"><pre>npm install</pre><button class="copy" type="button">Copy</button></div></li>
+          <li><span>Start</span><div class="cmd"><pre>npm run dev</pre><button class="copy" type="button">Copy</button></div></li>
+          <li><span>Scan</span><p>Open <b>localhost:5173</b>, paste the absolute path of a React project (try <code>samples/sample-react-app</code>) or upload a ZIP, and press Analyze. The API listens on port 3001.</p></li>
+        </ol>
+        <aside class="limits">
+          <h3>Good to know</h3>
+          <ul>
+            <li>Projects past about 10,000 files get slow.</li>
+            <li>Unusual routing setups may not be detected.</li>
+            <li>Nx, Turborepo and Lerna workspaces have partial support.</li>
+            <li>Custom ESLint plugins can trip the lint step.</li>
+            <li>It needs Node.js; it is not a browser extension.</li>
+          </ul>
+          <h3>Notes from reading the code</h3>
+          <ul>
+            <li>The README's clone command still says <code>your-username</code>; use the URL above.</li>
+            <li>The local API enables CORS for every origin and listens on all network interfaces. Any website you visit, or any device on your network, could ask it to scan a path while it runs. Binding to 127.0.0.1 and allowing only the dashboard's origin would close that.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span><a href="https://github.com/SparshSunilNaik/React-Codebase-Xray">React-Codebase-Xray</a> by Sparsh Sunil Naik, MIT licensed.</span>
+      <span>Built on madge, depcheck, ESLint, React Flow, Vite and Tailwind CSS.</span>
+    </div>
+  </footer>
+
+  <script src="js/site.js"></script>
+</body>
+</html>
